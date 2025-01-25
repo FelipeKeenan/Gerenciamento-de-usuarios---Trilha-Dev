@@ -5,11 +5,10 @@ let user = {} //Criando o objeto que terá as informações dinamicamente preenc
 let form = document.querySelector('#form-user-create')
 
 function addLine(dataUser) {
+    console.log(dataUser)
     let tr = document.createElement('tr')
     document.querySelector('#table-users').appendChild(tr)
-
     tr.innerHTML = `
-     <tr>
                       <td><img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm"></td>
                       <td>${dataUser.name}</td>
                       <td>${dataUser.email}</td>
@@ -18,8 +17,7 @@ function addLine(dataUser) {
                       <td>
                         <button type="button" class="btn btn-primary btn-xs btn-flat">Editar</button>
                         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-                      </td>
-                    </tr> 
+                      </td> 
     `
 
 }
@@ -45,5 +43,17 @@ form.addEventListener('submit', (e) => {
         }
     })
 
-    addLine(user)
+    //Criando o objeto instanciado da classe User
+    let objectUser = new User(
+        user.name,
+        user.gender,
+        user.birth,
+        user.country,
+        user.email,
+        user.password,
+        user.photo,
+        user.admin
+    )
+
+    addLine(objectUser)
 })
