@@ -13,16 +13,69 @@ class UserController {
         this.formEl.addEventListener('submit', (e) => {
             e.preventDefault()
 
-            this.addLine(this.getValues())
+            let values = this.getValues()
+
+            this.getPhoto().then(
+                (content) => {
+
+                    values.photo = content
+
+                    this.addLine(values)
+
+
+                }, (e) => {
+                    console.error(e)
+                }
+            )
         })
 
     } //Fechando o método OnSubmit
+
+    getPhoto() {
+
+
+        return new Promise((resolve, reject) => {
+            let fileReader = new FileReader() //variável que irá armazenar o objeto nativo FileReader
+
+            let spread = [...this.formEl.elements]
+
+            let elements = spread.filter(item => {
+                if (item.name === "photo") {
+
+                    return item
+                }
+
+            })
+
+
+            let file = (elements[0].files[0])
+
+            //função/callback quando carregar a foto
+            fileReader.onload = () => {
+
+                resolve(fileReader.result)
+
+            }
+
+            fileReader.onerror = (e) => {
+                reject(e)
+            }
+
+            fileReader.readAsDataURL(file)
+
+        })
+
+
+    }
+
+
+
 
     // Método que percorre todos os elementos do formulário para criar um objeto user com os valores dos campos
     getValues() {
 
         let user = {}
-        var spread = [...this.formEl.elements]
+        var spread = [...this.formEl.elements] //Variável que será possível utilizar o forEach -> tornando um array
 
 
         //Percorre todos os inputs
@@ -60,7 +113,7 @@ class UserController {
         let tr = document.createElement('tr')
         this.tableEl.appendChild(tr)
         tr.innerHTML = `
-                      <td><img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm"></td>
+                      <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
                       <td>${dataUser.name}</td>
                       <td>${dataUser.email}</td>
                       <td>${dataUser.admin}</td>
