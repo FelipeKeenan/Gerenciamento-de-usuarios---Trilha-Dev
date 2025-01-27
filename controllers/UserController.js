@@ -20,6 +20,8 @@ class UserController {
 
             let values = this.getValues()
 
+            if (!values) return false;
+
             this.getPhoto().then(
                 (content) => {
 
@@ -84,10 +86,21 @@ class UserController {
 
         let user = {}
         var spread = [...this.formEl.elements] //Variável que será possível utilizar o forEach -> tornando um array
+        let isValid = true
 
 
         //Percorre todos os inputs
         spread.forEach((field) => {
+
+            //Verificando e validando se há nos elementos dos inputs algum campo com 'name', 'email' ou 'password'
+            if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value) {
+
+                //Acessando a tag pai e inserindo uma classe nova nela para deixar o ''border'' = red
+                field.parentElement.classList.add('has-error')
+                isValid = false
+
+                return false;
+            }
 
             //Criando uma condição e selecionando apenas o input radio que está checked
             if (field.name === 'gender') {
@@ -110,6 +123,10 @@ class UserController {
             }
         })
 
+        if (!isValid) {
+            return false
+        }
+
         //Criando o objeto instanciado da classe User / Model
         return new User(
             user.name,
@@ -126,6 +143,8 @@ class UserController {
     //Método que irá criar uma ''linha'' no documento com as informações dos inputs
     addLine(dataUser) {
         let tr = document.createElement('tr')
+        tr.dataset.user = JSON.stringify(dataUser)
+
         this.tableEl.appendChild(tr)
         tr.innerHTML = `
                       <td><img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm"></td>
@@ -138,6 +157,31 @@ class UserController {
                         <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
                       </td> 
     `
+
+        this.updateCount()
     } //Fechando o método addLine
+
+    updateCount() {
+
+        let numberUsers = 0
+        let numberAdmin = 0
+        let tableChildren = [...this.tableEl.children]
+
+        tableChildren.forEach(tr => {
+
+            numberUsers++;
+
+            let user = JSON.parse(tr.dataset.user)
+
+            if (user._admin) numberAdmin++;
+
+
+
+        })
+
+        document.querySelector('#number-users').innerHTML = numberUsers
+        document.querySelector('#number-users-admin').innerHTML = numberAdmin
+
+    } //Fechando o método updateCount
 
 }
